@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>To Do App</title>
+    </head>
+    <body>
+        <input id="todo-title" type="text" />
+        <input id="date-picker" type="date"/>
+        <button onclick="addTodo()">Enter</button>
+        <div id="todo-list"></div>
+        <script>
+            // Model (manage data)
+            let todos;
+            const savedTodos = JSON.parse(localStorage.getItem('todos'));
+
+            if(Array.isArray(savedTodos)) {
+                todos = savedTodos;
+            } else {
+                todos = [{
+                    title: 'Get groceries',
+                    dueDate: '2019-01-01',
+                    id: 'id1'
+                }, {
+                    title: 'Wash car',
+                    dueDate: '2019-01-02',
+                    id: 'id2'
+                }, {
+                    title: 'Do laundry',
+                    dueDate: '2019-01-03',
+                    id: 'id3'
+                }, {
+                    title: 'Make dinner',
+                    dueDate: '2019-01-04',
+                    id: 'id4'
+                }];
+            }
+
+            // Creates a todo
+            function createTodo(title, dueDate) {
+                const id = '' + new Date().getTime();
+                todos.push({
+                    title: title,
+                    dueDate: dueDate,
+                    id: id
+                });
+
+                saveTodos();
+            }
+
+            // Delete a todo
+            function removeTodo(idToDelete) {
+                todos = todos.filter(function(todo) {
+                    return todo.id !== idToDelete;
+                });
+
+                saveTodos();
+            }
+
+            // Save to local storage
+            function saveTodos() {
+                const todosJSON = JSON.stringify(todos);
+                localStorage.setItem('todos', todosJSON);
+            }
+
+            // View (visual, rendering)
+            function render() {
+                document.getElementById('todo-list').innerHTML = '';
+                todos.forEach(function(todo) {
+                    const element = document.createElement('div');
+                    element.innerText = todo.title + ' ' + todo.dueDate;
+
+                    const deleteButton = document.createElement('button');
+                    deleteButton.innerText = 'Delete';
+                    deleteButton.style = {
+                        marginLeft: '12px'
+                    };
+                    
+                    deleteButton.id = todo.id;
+                    deleteButton.onclick = deleteTodo;
+
+                    element.appendChild(deleteButton);
+
+                    const todoList = document.getElementById('todo-list');
+                    todoList.appendChild(element);
+                });
+            }
+
+            render();
+
+            // Controller (interactions with data)
+            function addTodo() {
+                const textbox = document.getElementById('todo-title');
+                const title = textbox.value;
+    
+                const datePicker = document.getElementById('date-picker');
+                const dueDate = datePicker.value;
+
+                createTodo(title, dueDate);
+                render();
+            }
+
+            function deleteTodo(event) {
+                const deleteButton = event.target;
+                const idToDelete = deleteButton.id;
+                
+                removeTodo(idToDelete);
+                render();
+            }
+        </script>
+    </body>
+</html>
