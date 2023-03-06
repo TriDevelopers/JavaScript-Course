@@ -119,7 +119,25 @@ const printSlotMachine = (rows) => {
 }
 
 const getWinnings = (rows, bet, lines) => {
+    let winnings = 0;
 
+    for(let i = 0; i < lines; i++) {
+        const symbols = rows[i];
+        let allSame = true;
+
+        for(const symbol of symbols) {
+            if(symbol !== symbols[0]) {
+                allSame = false;
+                break;
+            }
+        }
+
+        if (allSame) {
+            winnings += bet * SYMBOLS_VALUES[symbols[0]];
+        }
+    }
+
+    return winnings;
 }
 
 let balance = deposit();
@@ -128,4 +146,4 @@ const bet = getBet(balance);
 const reels = spinTheSlotMachine();
 const rows = transpose(reels);
 printSlotMachine(rows);
-getWinnings(rows, bet, numberOfLines);
+console.log("You won $" + getWinnings(rows, bet, numberOfLines));
