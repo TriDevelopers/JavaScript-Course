@@ -7,6 +7,7 @@
 // Play again? how many times?
 
 // Use node file.js to run the file
+// The stats is not quite correct, but the logic is there
 
 const prompt = require("prompt-sync")();
 
@@ -140,10 +141,33 @@ const getWinnings = (rows, bet, lines) => {
     return winnings;
 }
 
-let balance = deposit();
-const numberOfLines = getNumberOfLines();
-const bet = getBet(balance);
-const reels = spinTheSlotMachine();
-const rows = transpose(reels);
-printSlotMachine(rows);
-console.log("You won $" + getWinnings(rows, bet, numberOfLines));
+const game = () => {
+    let balance = deposit();
+
+    while(true) {
+        console.log("Balance: $" + balance);
+        const numberOfLines = getNumberOfLines();
+        const bet = getBet(balance, numberOfLines);
+        balance -= bet * numberOfLines;
+        const reels = spinTheSlotMachine();
+        const rows = transpose(reels);
+        printSlotMachine(rows);
+        const winnings = getWinnings(rows, bet, numberOfLines);
+        balance += winnings;
+        console.log("You won $" + winnings);
+
+        if (balance <= 0) {
+            console.log("You lost all your money, game over.");
+            break;
+        }
+
+        const playAgain = prompt("Do you want to play again? (y/n): ");
+
+        if(playAgain !== "y") {
+            console.log("Thank you for playing.");
+            break;
+        }
+    }
+}
+
+game();
